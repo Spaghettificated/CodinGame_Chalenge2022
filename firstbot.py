@@ -64,7 +64,7 @@ while True:
                 neutral_tiles.append(tile)
     print("board read", file=sys.stderr, flush=True)
 
-    attack_point = random.choice(neutral_tiles+enemy_tiles).pos
+    attack_point = random.choice(enemy_tiles).pos
     for bot in my_bots: #moving bots
         random.seed(None)
         pos = x0, y0 = bot.pos
