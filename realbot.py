@@ -95,13 +95,48 @@ while True:
                     if tile.owner:
                         id_ = tile.owner_id()
                         bots[id_].append(tile.pos)
+
+    print(f"board read: \n{my_border = }\n{my_bots = }", file=sys.stderr, flush=True)
                             
 
+    ### Moving Bots
+    for bot_pos in my_bots:
+        x0,y0 = bot_pos
+        tile = get_tile(bot_pos)
+        amount = tile.units
+        direction = random.choice(directions)
+        x1,y1 = pos = bot_pos + direction
+        if get_tile(pos):
+            commands.append(f"MOVE {bot.amount} {x0} {y0} {x1} {y1}")
+
+    print("bots moved", file=sys.stderr, flush=True)
 
 
-            
+    ### Building Recyclers
+    if my_matter>=10:
+        rec_tile = get_tile(random.choice(my_border))
+        if rec_tile.can_build:
+            my_matter-=10
+            x,y = tile.pos
+            commands.append(f"BUILD {x} {y}")
+            rec_tile.can_spawn=False    # may require updating also other parameters
 
-    print("board read", file=sys.stderr, flush=True)
+    print("recyclers built", file=sys.stderr, flush=True)
+
+
+    ### Spawning Bots
+    tries = 0
+    while my_matter>10 and tries<100: #spawning bots
+        tries+=1
+        tile = get_tile(random.choice(my_border))
+        if tile.can_spawn:
+            my_matter-=10
+            x,y = tile.pos
+            commands.append(f"SPAWN 1 {x} {y}")
+
+    print("bots spawned", file=sys.stderr, flush=True)
+
+
 
 
     if not commands:
