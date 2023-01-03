@@ -56,7 +56,7 @@ def adjacent(center):
     out=[]
     for direction in directions:
         pos = center + direction
-        if (tile:=get_tile(pos)):
+        if (tile:=get_tile(pos)) is not None:
             if tile.scrap>0:
                 out.append(tile)
     return out
@@ -113,9 +113,20 @@ while True:
         x0,y0 = bot_pos
         tile = get_tile(bot_pos)
         amount = tile.units
-        direction = random.choice(directions)
-        x1,y1 = pos = bot_pos + direction
-        if get_tile(pos):
+
+        adjacent_tiles = adjacent(bot_pos)
+        goal_tiles = [tile for tile in adjacent_tiles if tile.owner<=0 and not tile.recycler]
+
+        if goal_tiles:
+            move_amount = amount//len(goal_tiles)
+            rest = amount -move_amount
+            for goal_tile in goal_tiles:
+                how_many = move_amount + (1 if rest>0 else 0)
+                rest-=1
+                x1,y1 = goal_tile.pos
+                commands.append(f"MOVE {how_many} {x0} {y0} {x1} {y1}")
+        else:
+            x1,y1 = random.choice(enemy_border)
             commands.append(f"MOVE {amount} {x0} {y0} {x1} {y1}")
 
     print("bots moved", file=sys.stderr, flush=True)
