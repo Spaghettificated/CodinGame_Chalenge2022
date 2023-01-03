@@ -24,7 +24,7 @@ class Tile:
         return 0 if self.owner>0 else 1
 
     def unit_power(self):
-        return owner*units
+        return self.owner*self.units
 
     def __eq__(self, other):
         return astuple(self)[1:] == astuple(other)[1:] and np.all(self.pos==other.pos)
@@ -38,6 +38,13 @@ bots = my_bots, enemy_bots = [[],[]]
 centers = [np.zeros(2), np.zeros(2)]
 score = [0,0]
 turn = -1
+
+def remove_pos(ls, pos):
+    # ls.pop(ls.index(pos))
+    for i,x in enumerate(ls):
+        if np.all(x==pos):
+            ls.pop(i)
+            return
 
 
 def get_tile(pos):
@@ -78,7 +85,8 @@ while True:
                 if old_tile.owner != tile.owner:
                     if old_tile.owner:
                         id_ = old_tile.owner_id()
-                        borders[id_].remove(old_tile.pos)
+                        # borders[id_].remove(old_tile.pos)
+                        remove_pos(borders[id_], old_tile.pos)
                         centers[id_] = (score[id_] * centers[id_] + old_tile.pos)/(score[id_]-1)
                         score[id_]-=1
                     if tile.owner:
@@ -91,7 +99,8 @@ while True:
                 if np.sign(old_units) != np.sign(new_units):    #detect only changes in are there units and whos
                     if old_tile.owner:
                         id_ = old_tile.owner_id()
-                        bots[id_].remove(old_tile.pos)
+                        # bots[id_].remove(old_tile.pos)
+                        remove_pos(bots[id_], old_tile.pos)
                     if tile.owner:
                         id_ = tile.owner_id()
                         bots[id_].append(tile.pos)
@@ -107,7 +116,7 @@ while True:
         direction = random.choice(directions)
         x1,y1 = pos = bot_pos + direction
         if get_tile(pos):
-            commands.append(f"MOVE {bot.amount} {x0} {y0} {x1} {y1}")
+            commands.append(f"MOVE {amount} {x0} {y0} {x1} {y1}")
 
     print("bots moved", file=sys.stderr, flush=True)
 
