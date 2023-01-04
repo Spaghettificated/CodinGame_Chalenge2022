@@ -98,11 +98,11 @@ while True:
 
                 old_units, new_units = old_tile.unit_power(), tile.unit_power()
                 if np.sign(old_units) != np.sign(new_units):    #detect only changes in are there units and whos
-                    if old_tile.owner:
+                    if old_units:
                         id_ = old_tile.owner_id()
                         bots[id_].remove(old_tile.pos)
                         # remove_pos(bots[id_], old_tile.pos)
-                    if tile.owner:
+                    if new_units:
                         id_ = tile.owner_id()
                         bots[id_].append(tile.pos)
 
