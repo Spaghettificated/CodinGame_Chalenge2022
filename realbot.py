@@ -9,9 +9,9 @@ import random
 directions = [arr((1,0)), arr((0,1))]; directions += [-direction for direction in directions]
 owner_translation = {1:1, 0:-1, -1:0}
 
-@dataclass(eq=False)
+@dataclass()#eq=False)
 class Tile:
-    pos: np.array
+    pos: tuple
     scrap: int
     owner: int
     units: int
@@ -26,13 +26,14 @@ class Tile:
     def unit_power(self):
         return self.owner*self.units
 
-    def __eq__(self, other):
-        return astuple(self)[1:] == astuple(other)[1:] and np.all(self.pos==other.pos)
+    # def __eq__(self, other):
+    #     return astuple(self)[1:] == astuple(other)[1:] and np.all(self.pos==other.pos)
 
 
 size = width, height = arr([int(i) for i in input().split()])
 # board = [height*[None] for _ in range(width)]
 board = [[Tile(arr((x,y)),0,0,0,False,True,True,False) for y in range(height)] for x in range(width)]
+board = [[Tile((x,y),0,0,0,False,True,True,False) for y in range(height)] for x in range(width)]
 borders = my_border, enemy_border = [[],[]]
 bots = my_bots, enemy_bots = [[],[]]
 centers = [np.zeros(2), np.zeros(2)]
@@ -46,9 +47,9 @@ def remove_pos(ls, pos):
             ls.pop(i)
             return
 
-
 def get_tile(pos):
-    if np.all(pos>=0) and np.all(pos<size):
+    pos_arr = arr(pos)
+    if np.all(pos_arr>=0) and np.all(pos_arr<size):
         return board[pos[0]][pos[1]]
     return None
 
@@ -74,7 +75,7 @@ while True:
             tile = scrap_amount, owner, units, recycler, can_build, can_spawn, in_range_of_recycler = [int(k) for k in input().split()]
             owner = owner_translation[owner]
             tile[1] = owner
-            pos = arr((x,y))
+            pos = (x,y)
             tile = Tile(pos,*tile)
 
             old_tile = board[x][y]
@@ -85,8 +86,8 @@ while True:
                 if old_tile.owner != tile.owner:
                     if old_tile.owner:
                         id_ = old_tile.owner_id()
-                        # borders[id_].remove(old_tile.pos)
-                        remove_pos(borders[id_], old_tile.pos)
+                        borders[id_].remove(old_tile.pos)
+                        # remove_pos(borders[id_], old_tile.pos)
                         centers[id_] = (score[id_] * centers[id_] + old_tile.pos)/(score[id_]-1)
                         score[id_]-=1
                     if tile.owner:
@@ -99,8 +100,8 @@ while True:
                 if np.sign(old_units) != np.sign(new_units):    #detect only changes in are there units and whos
                     if old_tile.owner:
                         id_ = old_tile.owner_id()
-                        # bots[id_].remove(old_tile.pos)
-                        remove_pos(bots[id_], old_tile.pos)
+                        bots[id_].remove(old_tile.pos)
+                        # remove_pos(bots[id_], old_tile.pos)
                     if tile.owner:
                         id_ = tile.owner_id()
                         bots[id_].append(tile.pos)
