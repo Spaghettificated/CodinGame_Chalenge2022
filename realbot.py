@@ -136,7 +136,7 @@ while True:
     ### Building Recyclers
     if my_matter>=10:
         rec_tile = get_tile(random.choice(my_border))
-        if rec_tile.can_build:
+        if rec_tile.can_build and not rec_tile.units:
             my_matter-=10
             x,y = tile.pos
             commands.append(f"BUILD {x} {y}")
