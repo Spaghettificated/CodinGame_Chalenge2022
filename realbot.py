@@ -125,7 +125,8 @@ while True:
                 how_many = move_amount + (1 if rest>0 else 0)
                 rest-=1
                 x1,y1 = goal_tile.pos
-                commands.append(f"MOVE {how_many} {x0} {y0} {x1} {y1}")
+                if how_many:
+                    commands.append(f"MOVE {how_many} {x0} {y0} {x1} {y1}")
         else:
             x1,y1 = random.choice(enemy_border)
             commands.append(f"MOVE {amount} {x0} {y0} {x1} {y1}")
